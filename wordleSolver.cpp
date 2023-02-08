@@ -5,13 +5,8 @@
 #include <fstream>
 #include <stdexcept>
 
-// open a wordBank.txt file
-// read the file line by line
-// store the words in a vector
-// close the file
-// return the vector
-
-std::vector<std::string> loadFromFile(const std::string &fileName) {
+// open a wordBank_*.txt file and store the words in a vector
+const std::vector<std::string> loadFromFile(const std::string &fileName) {
     std::ifstream infile;
     infile.open(fileName);
 
@@ -29,13 +24,38 @@ std::vector<std::string> loadFromFile(const std::string &fileName) {
     return wordBank;
 }
 
-bool isWord(const std::vector<std::string> &wordBank, const std::string &word) {
-    for (const auto &w : wordBank) {
-        if (w == word) {
-            return true;
-        }
-    }
-    return false;
+std::string initialState() const {
+    std::cout << "MIT researchers recommend starting with SALET, " << std::endl;
+    std::cout << "Other good starting words include SLATE, CRANE, SLANT, CRATE, and CARTE." << std::endl;
+    std::cout << "Pick a lucky word to begin: " << std::endl;
+
+    std::string choice = "";
+    std::cin >> choice;
+
+    return choice;
 }
 
+const std::string transitionState() {
+    std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
+    std::cout << "Please enter the results of the guess:" << std::endl;
+    std::string result = "";
+    std::cin >> result;
 
+    return result;
+}
+
+//void workingState(const std::string &str) {
+//
+//}
+
+int main() {
+    // load wordBank
+    std::vector<std::string> wordBank = loadFromFile("wordBank_NYTimes.txt");
+
+    std::string word = initialState();
+    std::string result = transitionState();
+
+
+
+    return 0;
+}
