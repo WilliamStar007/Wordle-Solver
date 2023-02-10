@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="https://i.postimg.cc/c1wLtX45/My-project-1.png" alt="Pac-Man" width="200">
+  <img src="https://i.postimg.cc/SR4J9rnH/NYT-Wordle.png" alt="Pac-Man" width="200">
   <br>
   NYT Wordle Solver
   <br>
 </h1>
 
-New York Times Wordle Solver.
+New York Times Wordle Solver.  
 Today's Solution: HEADY
