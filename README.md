@@ -4,3 +4,6 @@
   NYT Wordle Solver
   <br>
 </h1>
+
+New York Times Wordle Solver.
+Today's Solution: HEADY
