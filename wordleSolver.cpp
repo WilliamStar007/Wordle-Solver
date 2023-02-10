@@ -1,15 +1,31 @@
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <iostream>
-#include <fstream>
-#include <stdexcept>
-#include <algorithm>
+#include "wordleSolver.h"
 
-uint32_t WORD_LENGTH = 5;
+const uint32_t ATTEMPTS = 6;
+const uint32_t WORD_LENGTH = 5;
 
-// open a wordBank_*.txt file and store the words in a vector
-const std::vector<std::string> loadFromFile(const std::string &fileName) {
+// class constructor
+WordleSolver::WordleSolver(std::string filename): success(false), attempts(ATTEMPTS) {
+    loadFromFile(filename);
+}
+
+// attempt to solve wordle
+// return whether solved successfully
+bool WordleSolver::solve() {
+    inputState();
+    transitionState();
+    workingState();
+
+    while (attempts && !success) {
+        inputState();
+        transitionState();
+        workingState();
+    }
+
+    return success;
+}
+
+// open a wordBank_*.txt file and store words in wordBank
+void WordleSolver::loadFromFile(const std::string &fileName) {
     std::ifstream infile;
     infile.open(fileName);
 
@@ -17,18 +33,16 @@ const std::vector<std::string> loadFromFile(const std::string &fileName) {
         throw std::invalid_argument("File not found" + fileName);
     }
 
-    std::vector<std::string> wordBank;
     std::string word;
     while (infile >> word) {
         wordBank.push_back(word);
     }
 
     infile.close();
-    return wordBank;
 }
 
-// check if a string is a word from wordBank
-bool isWord(const std::string& str, const std::vector<std::string>& wordBank) {
+// check if word choice is a word from wordBank
+bool WordleSolver::isWord(const std::string& str) {
     if (str.length() != WORD_LENGTH) {
         return false;
     }
@@ -42,44 +56,9 @@ bool isWord(const std::string& str, const std::vector<std::string>& wordBank) {
     return false;
 }
 
-// list possible words and make suggestions
-bool suggestions(const std::vector<std::string>& wordBank) {
-    std::cout << "Here are all the possibilities:" << std::endl;
-
-    int counter = 0;
-    for (auto word: wordBank) {
-        std::cout << word << " ";
-        ++counter;
-
-        if (counter % 6 == 0) {
-            std::cout << std::endl;
-        }
-        if (counter >= 30) {
-            int remain = wordBank.size() - counter;
-            std::cout << remain << " words elided..." << std::endl;;
-            break;
-        }
-    }
-
-    // output spacing
-    if (counter % 6 != 0) {
-        std::cout << std::endl;
-    }
-
-
-    // solved!
-    if (wordBank.size() == 1) {
-        std::cout << "There is only one possibility: " << wordBank[0] << std::endl;
-        return true;
-    }
-
-    return false;
-}
-
-const std::string inputState(const std::vector<std::string>& wordBank, bool initial = false) {
-    std::string choice = "";
-
-    if (initial) {
+// take user input from terminal
+void WordleSolver::inputState() {
+    if (attempts == ATTEMPTS) {
         std::cout << "MIT researchers recommend starting with SALET, " << std::endl;
         std::cout << "Other good starting words include:" << std::endl;
         std::cout << "SLATE, CRANE, SLANT, CRATE, and CARTE." << std::endl;
@@ -89,28 +68,26 @@ const std::string inputState(const std::vector<std::string>& wordBank, bool init
         std::cout << "Pick a lucky word to try: " << std::endl;
     }
 
-    std::cin >> choice;
-    while (!isWord(choice, wordBank)) {
-        std::cout << choice << " is not a valid word (nonexistent/excluded)." << std::endl;
-        suggestions(wordBank);
-        std::cout << "Please enter a existing 5-letter word: " << std::endl;
-        std::cin >> choice;
+    std::cin >> word_choice;
+    while (!isWord(word_choice)) {
+        std::cout << word_choice << " is not a valid word (nonexistent/excluded)." << std::endl;
+        std::cout << "Please enter a valid 5-letter word: " << std::endl;
+        std::cin >> word_choice;
     }
 
-    return choice;
+    // update variable
+    --attempts;
 }
 
-const std::string transitionState() {
+// ask user for result
+void WordleSolver::transitionState() {
     std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
     std::cout << "Please enter the results of the guess: " << std::endl;
-    std::string result = "";
-    std::cin >> result;
-
-    return result;
+    std::cin >> guess_result;
 }
 
-// core function to
-bool workingState(const std::string& guess, const std::string& result, std::vector<std::string>& wordBank) {
+// remove words from wordBank based on guess and result
+void WordleSolver::workingState() {
     // correct char and position
     std::unordered_map<int, char> green;
     // maximum occurrence of a char
@@ -119,24 +96,24 @@ bool workingState(const std::string& guess, const std::string& result, std::vect
     std::unordered_map<char, int> red;
 
     // solved!
-    if (result == "GGGGG") {
-        return true;
+    if (guess_result == "GGGGG") {
+        success = true;
     }
 
     for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
         // grey slots
-        if (result[i] == 'R') {
-            red[guess[i]];
+        if (guess_result[i] == 'R') {
+            red[word_choice[i]];
         }
         // yellow slots
-        else if (result[i] == 'Y') {
-            yellow[guess[i]] += 1;
+        else if (guess_result[i] == 'Y') {
+            yellow[word_choice[i]] += 1;
         }
         // green slots
         else {
-            green[i] = guess[i];
-            yellow[guess[i]] += 1;
-            red[guess[i]] += 1;
+            green[i] = word_choice[i];
+            yellow[word_choice[i]] += 1;
+            red[word_choice[i]] += 1;
         }
     }
 
@@ -185,31 +162,37 @@ bool workingState(const std::string& guess, const std::string& result, std::vect
     }
 
     // get suggestions
-    return suggestions(wordBank);
+    suggestions();
 }
 
-int main() {
-    // load wordBank
-    std::vector<std::string> wordBank = loadFromFile("wordBank_OG.txt");
-
-    std::string word = inputState(wordBank, true);
-    std::string result = transitionState();
-    bool success = workingState(word, result, wordBank);
-
-    int attempts = 5;
-    while (!success && attempts > 0) {
-        word = inputState(wordBank);
-        result = transitionState();
-        success = workingState(word, result, wordBank);
-        attempts -= 1;
+// list possible words and make suggestions
+void WordleSolver::suggestions() {
+    // solved!
+    if (wordBank.size() == 1) {
+        std::cout << "There is only one possibility: " << wordBank[0] << std::endl;
+        success = true;
+        return;
     }
 
-    if (success) {
-        std::cout << "Puzzle solved, nice!!" << std::endl;
-    }
-    else {
-        std::cout << "So close!" << std::endl;
+    std::cout << "Here are all the possibilities:" << std::endl;
+
+    int counter = 0;
+    for (auto word: wordBank) {
+        std::cout << word << " ";
+        ++counter;
+
+        if (counter % 6 == 0) {
+            std::cout << std::endl;
+        }
+        if (counter >= 30) {
+            int remain = wordBank.size() - counter;
+            std::cout << remain << " words elided..." << std::endl;;
+            break;
+        }
     }
 
-    return 0;
+    // output spacing
+    if (counter % 6 != 0) {
+        std::cout << std::endl;
+    }
 }
