@@ -30,7 +30,7 @@ void WordleSolver::loadFromFile(const std::string &fileName) {
     infile.open(fileName);
 
     if (infile.fail()) {
-        throw std::invalid_argument("File not found" + fileName);
+        throw std::invalid_argument("File not found " + fileName);
     }
 
     std::string word;
