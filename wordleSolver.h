@@ -37,6 +37,9 @@ class WordleSolver {
         // list possible words and make suggestions
         void suggestions();
 
+        // find 3 best words to guess based on wordBank
+        void bestWords();
+
         // private variables
         bool success;
         uint32_t attempts;

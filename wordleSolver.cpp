@@ -58,16 +58,15 @@ bool WordleSolver::isWord(const std::string& str) {
 
 // take user input from terminal
 void WordleSolver::inputState() {
+    // Initial Message
     if (attempts == ATTEMPTS) {
-        std::cout << "MIT researchers recommend starting with SALET, " << std::endl;
+        std::cout << "MIT researchers recommend starting with SALET" << std::endl;
         std::cout << "Other good starting words include:" << std::endl;
         std::cout << "SLATE, CRANE, SLANT, CRATE, and CARTE." << std::endl;
-        std::cout << "Pick a lucky word to begin: " << std::endl;
-    }
-    else {
-        std::cout << "Pick a lucky word to try: " << std::endl;
     }
 
+    // Ask user input
+    std::cout << "Pick a lucky word: " << std::endl;
     std::cin >> word_choice;
     while (!isWord(word_choice)) {
         std::cout << word_choice << " is not a valid word (nonexistent/excluded)." << std::endl;
