@@ -4,6 +4,9 @@ int main() {
     WordleSolver solver;
     bool outcome = solver.solve();
 
+    // output spacing
+    std::cout << std::endl;
+
     if (outcome) {
         std::cout << "Great Job!!" << std::endl;
     }

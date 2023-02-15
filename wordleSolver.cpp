@@ -74,6 +74,9 @@ void WordleSolver::inputState() {
         std::cin >> word_choice;
     }
 
+    // remove word_choice from wordBank
+    remove(wordBank.begin(), wordBank.end(), word_choice);
+
     // update variable
     --attempts;
 }
@@ -97,6 +100,7 @@ void WordleSolver::workingState() {
     // solved!
     if (guess_result == "GGGGG") {
         success = true;
+        return;
     }
 
     for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
@@ -112,7 +116,9 @@ void WordleSolver::workingState() {
         else {
             green[i] = word_choice[i];
             yellow[word_choice[i]] += 1;
-            red[word_choice[i]] += 1;
+            if (red.count(word_choice[i])) {
+                red[word_choice[i]] += 1;
+            }
         }
     }
 
@@ -166,6 +172,11 @@ void WordleSolver::workingState() {
 
 // list possible words and make suggestions
 void WordleSolver::suggestions() {
+    if (wordBank.empty()) {
+        std::cout << "Check the earlier inputs!" << std::endl;
+        throw std::domain_error("Impossible situation");
+    }
+
     // solved!
     if (wordBank.size() == 1) {
         std::cout << "There is only one possibility: " << wordBank[0] << std::endl;
