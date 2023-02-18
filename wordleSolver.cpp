@@ -90,11 +90,13 @@ void WordleSolver::transitionState() {
 
 // remove words from wordBank based on guess and result
 void WordleSolver::workingState() {
-    // correct char and position
+    // correct char position
     std::unordered_map<int, char> green;
-    // maximum occurrence of a char
-    std::unordered_map<char, int> yellow;
     // minimum occurrence of a char
+    std::unordered_map<char, int> yellow_green;
+    // incorrect char position
+    std::unordered_map<int, char> yellow_red;
+    // maximum occurrence of a char
     std::unordered_map<char, int> red;
 
     // solved!
@@ -106,16 +108,20 @@ void WordleSolver::workingState() {
     for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
         // grey slots
         if (guess_result[i] == 'R') {
-            red[word_choice[i]];
+            red[word_choice[i]] = 0;
         }
         // yellow slots
         else if (guess_result[i] == 'Y') {
-            yellow[word_choice[i]] += 1;
+            yellow_green[word_choice[i]] += 1;
+            yellow_red[i] = word_choice[i];
         }
+    }
+
+    for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
         // green slots
-        else {
+        if (guess_result[i] == 'G') {
             green[i] = word_choice[i];
-            yellow[word_choice[i]] += 1;
+            yellow_green[word_choice[i]] += 1;
             if (red.count(word_choice[i])) {
                 red[word_choice[i]] += 1;
             }
@@ -140,7 +146,7 @@ void WordleSolver::workingState() {
             continue;
         }
 
-        // check for letter position
+        // check for correct letter position
         for (auto i: green) {
             if ((*it)[i.first] != i.second) {
                 it = wordBank.erase(it);
@@ -152,8 +158,20 @@ void WordleSolver::workingState() {
             continue;
         }
 
+        // check for incorrect letter position
+        for (auto i: yellow_red) {
+            if ((*it)[i.first] == i.second) {
+                it = wordBank.erase(it);
+                removed = true;
+                break;
+            }
+        }
+        if (removed) {
+            continue;
+        }
+
         // check for letter occurrence
-        for (auto i: yellow) {
+        for (auto i: yellow_green) {
             int num = std::count(it->begin(), it->end(), i.first);
             if (num < i.second) {
                 it = wordBank.erase(it);
