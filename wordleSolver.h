@@ -2,10 +2,11 @@
 #define WORDLE_SOLVER_WORDLESOLVER_H
 
 #include <string>
-#include <vector>
+#include <set>
 #include <unordered_map>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <stdexcept>
 
 // wordle solver class
@@ -22,8 +23,13 @@ class WordleSolver {
         // load wordBank from file
         void loadFromFile(const std::string &fileName);
 
+        // transforms input string to lower case
         // check if a string is a word from wordBank
-        bool isWord(const std::string& str);
+        bool isWord(std::string& str);
+
+        // transforms input string to upper case
+        // check if a string is a valid result for a guess
+        bool isResult(std::string& res);
 
         // take user input from terminal
         void inputState();
@@ -45,7 +51,7 @@ class WordleSolver {
         uint32_t attempts;
         std::string word_choice;
         std::string guess_result;
-        std::vector<std::string> wordBank;
+        std::set<std::string> wordBank;
 };
 
 

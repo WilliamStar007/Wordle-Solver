@@ -35,37 +35,44 @@ void WordleSolver::loadFromFile(const std::string &fileName) {
 
     std::string word;
     while (infile >> word) {
-        wordBank.push_back(word);
+        wordBank.insert(word);
     }
 
     infile.close();
 }
 
-// check if word choice is a word from wordBank
-bool WordleSolver::isWord(const std::string& str) {
+// transforms input string to lower case
+// check if a string is a word from wordBank
+bool WordleSolver::isWord(std::string& str) {
     if (str.length() != WORD_LENGTH) {
         return false;
     }
 
-    for (auto word: wordBank) {
-        if (str == word) {
-            return true;
-        }
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return wordBank.find(str) != wordBank.end();
+}
+
+// transforms input string to upper case
+// check if a string is a valid result for a guess
+bool WordleSolver::isResult(std::string& res) {
+    if (res.length() != WORD_LENGTH) {
+        return false;
     }
 
-    return false;
+    std::transform(res.begin(), res.end(), res.begin(), ::toupper);
+    return res.find_first_not_of("GYR") == std::string::npos;
 }
 
 // take user input from terminal
 void WordleSolver::inputState() {
-    // Initial Message
+    // initial Message
     if (attempts == ATTEMPTS) {
         std::cout << "MIT researchers recommend starting with SALET" << std::endl;
         std::cout << "Other good starting words include:" << std::endl;
         std::cout << "SLATE, CRANE, SLANT, CRATE, and CARTE." << std::endl;
     }
 
-    // Ask user input
+    // ask user input
     std::cout << "Pick a lucky word: " << std::endl;
     std::cin >> word_choice;
     while (!isWord(word_choice)) {
@@ -75,7 +82,7 @@ void WordleSolver::inputState() {
     }
 
     // remove word_choice from wordBank
-    remove(wordBank.begin(), wordBank.end(), word_choice);
+    wordBank.erase(word_choice);
 
     // update variable
     --attempts;
@@ -86,6 +93,13 @@ void WordleSolver::transitionState() {
     std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
     std::cout << "Please enter the results of the guess: " << std::endl;
     std::cin >> guess_result;
+
+    while (!isResult(guess_result)) {
+        std::cout << guess_result << " is not a valid result." << std::endl;
+        std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
+        std::cout << "Please enter the results of the guess: " << std::endl;
+        std::cin >> guess_result;
+    }
 }
 
 // remove words from wordBank based on guess and result
@@ -197,7 +211,7 @@ void WordleSolver::suggestions() {
 
     // solved!
     if (wordBank.size() == 1) {
-        std::cout << "There is only one possibility: " << wordBank[0] << std::endl;
+        std::cout << "There is only one possibility: " << *wordBank.begin() << std::endl;
         success = true;
         return;
     }
