@@ -6,4 +6,4 @@
 </h1>
 
 New York Times Wordle Solver.  
-Today's Solution: AVAIL
+Today's Solution: KIOSK
