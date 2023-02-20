@@ -6,4 +6,4 @@
 </h1>
 
 New York Times Wordle Solver.  
-Today's Solution: KIOSK
+Today's Solution: SWEAT
