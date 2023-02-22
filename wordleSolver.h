@@ -19,6 +19,9 @@ class WordleSolver {
         // return whether solved successfully
         bool solve();
 
+        // return number of remaining attempts
+        int getAttempts() { return attempts; }
+
     private:
         // load wordBank from file
         void loadFromFile(const std::string &fileName);
@@ -43,14 +46,15 @@ class WordleSolver {
         // list possible words and make suggestions
         void suggestions();
 
-        // find 3 best words to guess based on wordBank
+        // find the best words to guess based on wordBank
         void bestWords();
 
         // private variables
         bool success;
         int attempts;
-        std::string word_choice;
-        std::string guess_result;
+        std::string bestWord;
+        std::string wordChoice;
+        std::string guessResult;
         std::set<std::string> wordBank;
 };
 

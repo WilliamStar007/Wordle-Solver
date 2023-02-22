@@ -74,15 +74,15 @@ void WordleSolver::inputState() {
 
     // ask user input
     std::cout << "Pick a lucky word: " << std::endl;
-    std::cin >> word_choice;
-    while (!isWord(word_choice)) {
-        std::cout << word_choice << " is not a valid word (nonexistent/excluded)." << std::endl;
+    std::cin >> wordChoice;
+    while (!isWord(wordChoice)) {
+        std::cout << wordChoice << " is not a valid word (nonexistent/excluded)." << std::endl;
         std::cout << "Please enter a valid 5-letter word: " << std::endl;
-        std::cin >> word_choice;
+        std::cin >> wordChoice;
     }
 
-    // remove word_choice from wordBank
-    wordBank.erase(word_choice);
+    // remove wordChoice from wordBank
+    wordBank.erase(wordChoice);
 
     // update variable
     --attempts;
@@ -92,13 +92,13 @@ void WordleSolver::inputState() {
 void WordleSolver::transitionState() {
     std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
     std::cout << "Please enter the results of the guess: " << std::endl;
-    std::cin >> guess_result;
+    std::cin >> guessResult;
 
-    while (!isResult(guess_result)) {
-        std::cout << guess_result << " is not a valid result." << std::endl;
+    while (!isResult(guessResult)) {
+        std::cout << guessResult << " is not a valid result." << std::endl;
         std::cout << "Using Green: G, Yellow: Y, Grey: R," << std::endl;
         std::cout << "Please enter the results of the guess: " << std::endl;
-        std::cin >> guess_result;
+        std::cin >> guessResult;
     }
 }
 
@@ -114,30 +114,36 @@ void WordleSolver::workingState() {
     std::unordered_map<char, int> red;
 
     // solved!
-    if (guess_result == "GGGGG") {
+    if (guessResult == "GGGGG") {
         success = true;
+        return;
+    }
+
+    // failed!
+    if (!attempts) {
+        success = false;
         return;
     }
 
     for (int i = 0; i < WORD_LENGTH; ++i) {
         // grey slots
-        if (guess_result[i] == 'R') {
-            red[word_choice[i]] = 0;
+        if (guessResult[i] == 'R') {
+            red[wordChoice[i]] = 0;
         }
         // yellow slots
-        else if (guess_result[i] == 'Y') {
-            yellow_green[word_choice[i]] += 1;
-            yellow_red[i] = word_choice[i];
+        else if (guessResult[i] == 'Y') {
+            yellow_green[wordChoice[i]] += 1;
+            yellow_red[i] = wordChoice[i];
         }
     }
 
     for (int i = 0; i < WORD_LENGTH; ++i) {
         // green slots
-        if (guess_result[i] == 'G') {
-            green[i] = word_choice[i];
-            yellow_green[word_choice[i]] += 1;
-            if (red.count(word_choice[i])) {
-                red[word_choice[i]] += 1;
+        if (guessResult[i] == 'G') {
+            green[i] = wordChoice[i];
+            yellow_green[wordChoice[i]] += 1;
+            if (red.count(wordChoice[i])) {
+                red[wordChoice[i]] += 1;
             }
         }
     }
@@ -213,6 +219,7 @@ void WordleSolver::suggestions() {
     if (wordBank.size() == 1) {
         std::cout << "There is only one possibility: " << *wordBank.begin() << std::endl;
         success = true;
+        attempts -= 1;  // anticipate upcoming attempt
         return;
     }
 
@@ -242,27 +249,27 @@ void WordleSolver::suggestions() {
     bestWords();
 }
 
-// find 3 best words to guess based on wordBank
+// find the best words to guess based on wordBank
 void WordleSolver::bestWords() {
     // create frequency map
     std::unordered_map<char, int> freq;
     for (auto word: wordBank) {
-        for (auto c: word) {
-            freq[c] += 1;
+        for (int i = 0; i < WORD_LENGTH; ++i) {
+            if (guessResult[i] != 'G') {
+                freq[word[i]] += 1;
+            }
         }
     }
 
     // assign score to words
     std::unordered_map<std::string, float> score;
-    std::string bestWord;
     float maxScore = 0;
     for (auto word: wordBank) {
-        std::set<char> duplicate;
+        std::set<char> existing;
         for (int i = 0; i < WORD_LENGTH; ++i) {
-            if (guess_result[i] != 'G') {
-                if (!duplicate.count(word[i])) {
-                    score[word] += freq[word[i]];
-                }
+            if (guessResult[i] != 'G') {
+                float multiplier = existing.insert(word[i]).second ? 1 : 0.5;
+                score[word] += multiplier * freq[word[i]];
             }
         }
         if (score[word] > maxScore) {
@@ -272,7 +279,6 @@ void WordleSolver::bestWords() {
     }
 
     // suggest the best word
-    std::cout << "The best word to try is " << bestWord << std::endl;
+    std::transform(bestWord.begin(), bestWord.end(), bestWord.begin(), ::toupper);
+    std::cout << "The suggested word is " << bestWord << std::endl;
 }
-
-

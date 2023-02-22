@@ -8,7 +8,9 @@ int main() {
     std::cout << std::endl;
 
     if (outcome) {
-        std::cout << "Great Job!!" << std::endl;
+        // "phew" if solved on last attempt
+        std::string phew = solver.getAttempts()? "" : "Phew, ";
+        std::cout << phew << "Great Job!!" << std::endl;
     }
     else {
         std::cout << "So close!" << std::endl;
