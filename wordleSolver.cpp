@@ -1,7 +1,7 @@
 #include "wordleSolver.h"
 
-const uint32_t ATTEMPTS = 6;
-const uint32_t WORD_LENGTH = 5;
+const int ATTEMPTS = 6;
+const int WORD_LENGTH = 5;
 
 // class constructor
 WordleSolver::WordleSolver(std::string filename): success(false), attempts(ATTEMPTS) {
@@ -119,7 +119,7 @@ void WordleSolver::workingState() {
         return;
     }
 
-    for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
+    for (int i = 0; i < WORD_LENGTH; ++i) {
         // grey slots
         if (guess_result[i] == 'R') {
             red[word_choice[i]] = 0;
@@ -131,7 +131,7 @@ void WordleSolver::workingState() {
         }
     }
 
-    for (uint32_t i = 0; i < WORD_LENGTH; ++i) {
+    for (int i = 0; i < WORD_LENGTH; ++i) {
         // green slots
         if (guess_result[i] == 'G') {
             green[i] = word_choice[i];
@@ -237,4 +237,42 @@ void WordleSolver::suggestions() {
     if (counter % 6 != 0) {
         std::cout << std::endl;
     }
+
+    // suggest best word
+    bestWords();
 }
+
+// find 3 best words to guess based on wordBank
+void WordleSolver::bestWords() {
+    // create frequency map
+    std::unordered_map<char, int> freq;
+    for (auto word: wordBank) {
+        for (auto c: word) {
+            freq[c] += 1;
+        }
+    }
+
+    // assign score to words
+    std::unordered_map<std::string, float> score;
+    std::string bestWord;
+    float maxScore = 0;
+    for (auto word: wordBank) {
+        std::set<char> duplicate;
+        for (int i = 0; i < WORD_LENGTH; ++i) {
+            if (guess_result[i] != 'G') {
+                if (!duplicate.count(word[i])) {
+                    score[word] += freq[word[i]];
+                }
+            }
+        }
+        if (score[word] > maxScore) {
+            maxScore = score[word];
+            bestWord = word;
+        }
+    }
+
+    // suggest the best word
+    std::cout << "The best word to try is " << bestWord << std::endl;
+}
+
+

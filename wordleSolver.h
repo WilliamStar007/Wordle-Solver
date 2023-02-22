@@ -48,7 +48,7 @@ class WordleSolver {
 
         // private variables
         bool success;
-        uint32_t attempts;
+        int attempts;
         std::string word_choice;
         std::string guess_result;
         std::set<std::string> wordBank;
