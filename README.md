@@ -5,5 +5,5 @@
   <br>
 </h1>
 
-New York Times Wordle Solver.  
+Date Updated: February 22, 2023  
 Today's Solution: RIPER
