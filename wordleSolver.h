@@ -13,7 +13,7 @@
 class WordleSolver {
     public:
         // class constructor
-        explicit WordleSolver(std::string filename="wordBank_OG.txt");
+        explicit WordleSolver(const std::string& filename="wordBank_OG.txt");
 
         // attempt to solve wordle
         // return whether solved successfully

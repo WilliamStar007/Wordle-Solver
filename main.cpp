@@ -1,7 +1,11 @@
 #include "wordleSolver.h"
 
 int main() {
-    WordleSolver solver;
+    // initiate WordleSolver
+    std::cout << "Enter the name of a txt file as work bank:" << std::endl;
+    std::string bankFile;
+    std::cin >> bankFile;
+    WordleSolver solver(bankFile);
     bool outcome = solver.solve();
 
     // output spacing

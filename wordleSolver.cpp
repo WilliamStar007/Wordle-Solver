@@ -4,7 +4,8 @@ const int ATTEMPTS = 6;
 const int WORD_LENGTH = 5;
 
 // class constructor
-WordleSolver::WordleSolver(std::string filename): success(false), attempts(ATTEMPTS) {
+WordleSolver::WordleSolver(const std::string& filename):
+success(false), attempts(ATTEMPTS) {
     loadFromFile(filename);
 }
 
