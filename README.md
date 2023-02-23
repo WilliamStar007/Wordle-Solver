@@ -5,5 +5,5 @@
   <br>
 </h1>
 
-Date Updated: February 22, 2023  
-Today's Solution: RIPER
+Date Updated: February 22, 2023
+Today's Solution: VAGUE
