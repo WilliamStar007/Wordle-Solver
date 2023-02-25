@@ -3,8 +3,11 @@
 int main() {
     // initiate WordleSolver
     std::cout << "Enter the name of a txt file as work bank:" << std::endl;
-    std::string bankFile;
-    std::cin >> bankFile;
+    std::string bankFile = "wordBank_OG.txt";
+    if (std::cin.peek() != '\n') {
+        std::cin >> bankFile;
+    }
+
     WordleSolver solver(bankFile);
     bool outcome = solver.solve();
 
