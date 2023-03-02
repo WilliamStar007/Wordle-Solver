@@ -269,7 +269,7 @@ void WordleSolver::bestWords() {
         std::set<char> existing;
         for (int i = 0; i < WORD_LENGTH; ++i) {
             if (guessResult[i] != 'G') {
-                float multiplier = existing.insert(word[i]).second ? 1 : 0.5;
+                float multiplier = existing.insert(word[i]).second ? 1 : 0.0;
                 score[word] += multiplier * freq[word[i]];
             }
         }
