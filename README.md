@@ -5,5 +5,5 @@
   <br>
 </h1>
 
-Date Updated: February 27, 2023  
-Today's Solution: WORSE
+Date Updated: February 29, 2024  
+Today's Solution: IMAGE
